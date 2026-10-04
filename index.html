@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>বিজয় ⇄ ইউনিকোড কনভার্টার (ভার্সন ২) — নতুন ইঞ্জিন</title>
+<meta name="description" content="Free online Bijoy (SutonnyMJ) to Unicode Bangla converter and reverse. পুরনো বিজয় লেখা এক ক্লিকে ইউনিকোডে রূপান্তর করুন — অফলাইন, ফ্রি, কোনো সাইনআপ নেই।">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23006A4E'/%3E%3Ctext x='32' y='46' font-size='34' text-anchor='middle' fill='white' font-family='sans-serif'%3E%E0%A6%AC%E0%A6%BF%3C/text%3E%3C/svg%3E">
+<style>
+  :root {
+    --bg: #0b1020; --card: #121a2e; --card-border: #223052;
+    --text: #e8ecf7; --muted: #93a1c1; --green: #00a676; --red: #f42a41; --chip: #1a2542;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: "Noto Sans Bengali", "Hind Siliguri", -apple-system, "Segoe UI", Roboto, sans-serif;
+    background: radial-gradient(1200px 600px at 50% -10%, #14324a 0%, var(--bg) 55%);
+    color: var(--text); min-height: 100vh;
+    display: flex; flex-direction: column; align-items: center;
+    padding: 36px 16px 24px;
+  }
+  .wrap { width: 100%; max-width: 860px; }
+  header { text-align: center; margin-bottom: 22px; }
+  .flag-dot {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--chip); border: 1px solid var(--card-border);
+    border-radius: 999px; padding: 6px 14px; font-size: 13px; color: var(--muted); margin-bottom: 12px;
+  }
+  .flag-dot .bd { width: 18px; height: 12px; border-radius: 2px; background: var(--green); position: relative; }
+  .flag-dot .bd::after { content: ""; position: absolute; width: 7px; height: 7px; background: var(--red); border-radius: 50%; top: 2.5px; left: 5px; }
+  h1 { font-size: clamp(24px, 5vw, 34px); font-weight: 800; }
+  h1 .acc { color: var(--green); }
+  .sub { color: var(--muted); margin-top: 8px; font-size: 15px; }
+
+  .modes { display: flex; justify-content: center; gap: 10px; margin: 20px 0 18px; flex-wrap: wrap; }
+  .mode-btn {
+    background: var(--chip); border: 1px solid var(--card-border); color: var(--muted);
+    border-radius: 999px; padding: 10px 22px; font-size: 15px; font-family: inherit;
+    cursor: pointer; transition: all .15s; font-weight: 600;
+  }
+  .mode-btn:hover { color: var(--text); }
+  .mode-btn.active { background: linear-gradient(135deg, var(--green), #006a4e); border-color: var(--green); color: #fff; }
+
+  .card {
+    background: var(--card); border: 1px solid var(--card-border);
+    border-radius: 16px; padding: 16px 18px;
+  }
+  .card-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; gap: 10px; flex-wrap: wrap; }
+  .card-head .name { font-size: 13px; color: var(--muted); letter-spacing: .5px; }
+  textarea {
+    width: 100%; min-height: 150px; resize: vertical;
+    background: #0d1426; color: var(--text);
+    border: 1px solid var(--card-border); border-radius: 12px;
+    padding: 14px; font-size: 17px; line-height: 1.8;
+    font-family: "Noto Sans Bengali", "Hind Siliguri", -apple-system, sans-serif;
+    outline: none; transition: border-color .15s;
+  }
+  textarea:focus { border-color: var(--green); }
+  textarea.bijoy-font { font-family: "SutonnyMJ", "Sutonny MJ", "Sutonny", "Bijoy", "Noto Sans Bengali", sans-serif; font-size: 19px; }
+
+  .actions { display: flex; justify-content: center; align-items: center; gap: 10px; margin: 16px 0; flex-wrap: wrap; }
+  .btn {
+    background: var(--chip); border: 1px solid var(--card-border); color: var(--text);
+    border-radius: 10px; padding: 9px 18px; font-size: 14px; cursor: pointer;
+    font-family: inherit; transition: all .15s;
+  }
+  .btn:hover { border-color: var(--green); }
+  .btn.primary { background: linear-gradient(135deg, var(--green), #006a4e); border-color: var(--green); font-weight: 700; }
+  .btn.done { background: var(--green); border-color: var(--green); }
+  .count { color: var(--muted); font-size: 13px; margin-left: auto; }
+
+  .examples { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; justify-content: center; }
+  .chip {
+    background: var(--chip); border: 1px solid var(--card-border); color: var(--muted);
+    border-radius: 999px; padding: 6px 13px; font-size: 13px; cursor: pointer; transition: all .15s;
+  }
+  .chip:hover { color: var(--text); border-color: var(--green); }
+
+  .hint {
+    display: none; background: #2a1d0e; border: 1px solid #7a5b22; color: #ffd58a;
+    border-radius: 12px; padding: 10px 14px; font-size: 14px; margin-bottom: 14px;
+    cursor: pointer; text-align: center;
+  }
+  .hint.show { display: block; }
+  .note { color: var(--muted); font-size: 12.5px; margin-top: 8px; }
+
+  footer { margin-top: 24px; text-align: center; color: var(--muted); font-size: 13px; line-height: 1.8; }
+  footer a { color: var(--green); text-decoration: none; }
+  footer a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="flag-dot"><span class="bd"></span> Built in Bangladesh · 100% offline &amp; free</div>
+    <h1>বিজয় <span class="acc">⇄</span> ইউনিকোড</h1>
+    <p class="sub">পুরনো Bijoy / SutonnyMJ লেখা এক ক্লিকে ইউনিকোডে — আর উল্টোটাও। আপনার লেখা ব্রাউজারের বাইরে যায় না।</p>
+  </header>
+
+  <div class="modes">
+    <button class="mode-btn active" id="mode-b2u" onclick="setMode('b2u')">বিজয় → ইউনিকোড</button>
+    <button class="mode-btn" id="mode-u2b" onclick="setMode('u2b')">ইউনিকোড → বিজয়</button>
+  </div>
+
+  <div class="hint" id="hint" onclick="flipFromHint()"></div>
+
+  <div class="card">
+    <div class="card-head"><span class="name" id="in-label">বিজয় লেখা পেস্ট করুন (SutonnyMJ)</span></div>
+    <textarea id="input" class="bijoy-font" placeholder="এখানে বিজয় টেক্সট পেস্ট করুন… যেমন: Avwg evsjv‡`ki" spellcheck="false"></textarea>
+  </div>
+
+  <div class="actions">
+    <button class="btn primary" onclick="convertNow()">কনভার্ট করুন ⚡</button>
+    <button class="btn" onclick="swap()">উল্টে দিন ⇅</button>
+    <button class="btn" onclick="clearAll()">মুছুন 🗑</button>
+    <span class="count" id="count"></span>
+  </div>
+
+  <div class="card">
+    <div class="card-head">
+      <span class="name" id="out-label">ইউনিকোড ফলাফল</span>
+      <button class="btn" id="copy-btn" onclick="copyOut()">Copy 📋</button>
+    </div>
+    <textarea id="output" readonly placeholder="ফলাফল এখানে দেখা যাবে…" spellcheck="false"></textarea>
+    <div class="note" id="font-note" style="display:none">টিপ: বিজয় আউটপুট সঠিকভাবে দেখতে আপনার কম্পিউটারে বিজয় ফন্ট (যেমন: <b>SutonnyMJ</b>) ইনস্টল থাকতে হবে। কপি করে বিজয়-সাপোর্টেড ডকুমেন্টে পেস্ট করলেই ঠিকঠাক কাজ করবে।</div>
+  </div>
+
+  <div class="examples">
+    <span class="chip" onclick="loadSample(0)">নমুনা: জাতীয় ফুল</span>
+    <span class="chip" onclick="loadSample(1)">নমুনা: শুভেচ্ছা</span>
+    <span class="chip" onclick="loadSample(2)">নমুনা: ইউনিকোড → বিজয়</span>
+  </div>
+
+  <footer>
+    Day 2 of 100 · Built in public by <a href="https://github.com/iamzahirul" target="_blank" rel="noopener">Rasel (@iamzahirul)</a><br>
+    <span style="opacity:.75">🔒 সব কনভার্সন আপনার ব্রাউজারেই হয় — কোনো লেখা কোথাও পাঠানো হয় না · অফলাইনেও চলবে</span>
+  </footer>
+</div>
+
+<script src="engine.js"></script>
+<script>
+/* ============================================================
+   Bijoy ⇄ Unicode — UI layer (conversion engine: engine.js, written from scratch)
+   ============================================================ */
+let mode = "b2u"; // b2u = bijoy→unicode, u2b = unicode→bijoy
+
+const inputEl = document.getElementById("input");
+const outputEl = document.getElementById("output");
+const hintEl = document.getElementById("hint");
+const countEl = document.getElementById("count");
+const fontNote = document.getElementById("font-note");
+
+const SAMPLES = [
+  { mode: "b2u", text: "Dfq cv‡k av‡bi kx‡l †ewóZ cvwb‡Z fvmgvb RvZxq dzj kvcjv|" },
+  { mode: "b2u", text: "ïf beel©! mevB‡K fv‡jvevmv w`e‡mi ï‡f”Qv|" },
+  { mode: "u2b", text: "মানুষের সেবায় নিয়োজিত থাকার মধ্যেই প্রকৃত সুখ।" }
+];
+
+function looksLikeUnicode(t) {
+  let bn = 0, total = 0;
+  for (const ch of t) {
+    if (/\s/.test(ch)) continue;
+    total++;
+    if (/[\u0980-\u09FF]/.test(ch)) bn++;
+  }
+  return total > 3 && bn / total > 0.05;
+}
+
+function setMode(m) {
+  mode = m;
+  document.getElementById("mode-b2u").classList.toggle("active", m === "b2u");
+  document.getElementById("mode-u2b").classList.toggle("active", m === "u2b");
+  document.getElementById("in-label").textContent = m === "b2u"
+    ? "বিজয় লেখা পেস্ট করুন (SutonnyMJ)"
+    : "ইউনিকোড বাংলা লেখা পেস্ট করুন";
+  document.getElementById("out-label").textContent = m === "b2u"
+    ? "ইউনিকোড ফলাফল"
+    : "বিজয় ফলাফল (SutonnyMJ)";
+  inputEl.className = m === "b2u" ? "bijoy-font" : "";
+  inputEl.placeholder = m === "b2u"
+    ? "এখানে বিজয় টেক্সট পেস্ট করুন… যেমন: Avwg evsjv‡`ki"
+    : "এখানে ইউনিকোড টেক্সট পেস্ট করুন… যেমন: আমার সোনার বাংলা";
+  fontNote.style.display = m === "u2b" ? "block" : "none";
+  hintEl.classList.remove("show");
+  convertNow();
+}
+
+function convertNow() {
+  const text = inputEl.value;
+  if (!text.trim()) {
+    outputEl.value = "";
+    countEl.textContent = "";
+    hintEl.classList.remove("show");
+    return;
+  }
+  // smart hint: pasting Unicode text in Bijoy mode (or vice versa)
+  const isUni = looksLikeUnicode(text);
+  if (mode === "b2u" && isUni) {
+    hintEl.textContent = "💡 এই লেখাটা তো ইতিমধ্যে ইউনিকোড মনে হচ্ছে! এটাকে বিজয়ে নিতে চাইলে এখানে ক্লিক করুন।";
+    hintEl.classList.add("show");
+  } else if (mode === "u2b" && !isUni && /[^\x00-\x7F]/.test(text)) {
+    hintEl.textContent = "💡 এটা সম্ভবত বিজয় টেক্সট! বিজয় → ইউনিকোড করতে চাইলে এখানে ক্লিক করুন।";
+    hintEl.classList.add("show");
+  } else {
+    hintEl.classList.remove("show");
+  }
+
+  outputEl.value = mode === "b2u"
+    ? BijoyEngine.bijoyToUnicode(text)
+    : BijoyEngine.unicodeToBijoy(text);
+
+  const words = outputEl.value.trim().split(/\s+/).filter(Boolean).length;
+  countEl.textContent = outputEl.value.length + " অক্ষর · " + words + " শব্দ";
+}
+
+function flipFromHint() { setMode(mode === "b2u" ? "u2b" : "b2u"); }
+
+function swap() {
+  if (!outputEl.value) return;
+  inputEl.value = outputEl.value;
+  setMode(mode === "b2u" ? "u2b" : "b2u");
+}
+
+function clearAll() {
+  inputEl.value = "";
+  outputEl.value = "";
+  countEl.textContent = "";
+  hintEl.classList.remove("show");
+  inputEl.focus();
+}
+
+function copyOut() {
+  const btn = document.getElementById("copy-btn");
+  if (!outputEl.value) return;
+  const done = () => { btn.textContent = "Copied ✓"; btn.classList.add("done");
+    setTimeout(() => { btn.textContent = "Copy 📋"; btn.classList.remove("done"); }, 1500); };
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(outputEl.value).then(done).catch(() => { fallbackCopy(); done(); });
+  } else { fallbackCopy(); done(); }
+}
+function fallbackCopy() {
+  outputEl.select();
+  document.execCommand("copy");
+}
+
+function loadSample(i) {
+  setMode(SAMPLES[i].mode);
+  inputEl.value = SAMPLES[i].text;
+  convertNow();
+}
+
+// live conversion while typing (light debounce)
+let t;
+inputEl.addEventListener("input", () => { clearTimeout(t); t = setTimeout(convertNow, 120); });
+
+// Ctrl+Enter converts instantly
+document.addEventListener("keydown", e => {
+  if ((e.ctrlKey || e.metaKey) && e.key === "Enter") convertNow();
+});
+</script>
+</body>
+</html>
